@@ -41,7 +41,7 @@ jobs:
        - name: Build AppImage
          run: |
            alr --non-interactive build --release
-           VERSION=$(printf $(alr show | awk -v FS=[=:] '/bbt=/ {print $2}')) alr2appimage
+           VERSION=$(printf $(alr show | awk -v FS=[=:] '/bbt=/ {print $2}')) ./alr2appimage
        
        - name: Release
          uses: softprops/action-gh-release@v2
