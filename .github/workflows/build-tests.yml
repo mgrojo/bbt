@@ -32,16 +32,17 @@ jobs:
       - uses: alire-project/setup-alire@v2
         with:
           version: 2.1.0 # Remove this option to use the default (latest stable release)
-
+      
       - name: Setup MSYS2 (Windows)
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
         with:
-          msystem: MSYS
+          msystem: MINGW64
           update: true
           install: >-
-            rpl
-            
+            mingw-w64-x86_64-rpl
+            mingw-w64-x86_64-make
+
       # Install packages (needed by `make check`) on every platform
       - name: Install packages
         shell: bash
