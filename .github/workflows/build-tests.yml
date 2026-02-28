@@ -18,7 +18,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest] # List of GitHub Actions platform to run the workflow on
     env:
-      # For WolfSSL:
       #  set the value of the environment variable OS_PLATFORM according to the runner OS
       OS_PLATFORM: ${{ matrix.os == 'windows-latest' && 'Windows' || matrix.os == 'ubuntu-latest' && 'Linux' || matrix.os == 'macos-latest' && 'Darwin' || 'Unknown' }}
     runs-on: ${{ matrix.os }} # Run the continuous integration workflow on each OS listed in the matrix.
@@ -32,8 +31,14 @@ jobs:
         with:
           version: 2.1.0 # Remove this option to use the default (latest stable release)
 
+       # On Linux we install rpl package
+      - if: runner.os == 'Linux'
+        name: Client tests (CoAP and secure CoAP)
+        run: sudo apt install rpl
+        shell: bash
+
       - name: Run build and checks
-        run: make
+        run: make -k
         shell: bash
 
       - name: Save summary
