@@ -1,0 +1,41 @@
+name: Build and tests
+on:                    # Run the workflow for each of the following events:
+  push:                # - A branch is pushed or updated.
+    paths-ignore:
+      - 'README.md'
+  pull_request:        # - A pull-request is opened or updated.
+    paths-ignore:
+      - 'README.md'
+  workflow_dispatch:   # - A manual run of the workflow is requested from the GitHub web interface.
+  release:
+    types: [created]   # - A release is created.
+
+jobs:
+  main:
+    strategy:
+      fail-fast: false # Don't stop all the workflows when one of them fails.
+    
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest] # List of GitHub Actions platform to run the workflow on
+    env:
+      # For WolfSSL:
+      #  set the value of the environment variable OS_PLATFORM according to the runner OS
+      OS_PLATFORM: ${{ matrix.os == 'windows-latest' && 'Windows' || matrix.os == 'ubuntu-latest' && 'Linux' || matrix.os == 'macos-latest' && 'Darwin' || 'Unknown' }}
+    runs-on: ${{ matrix.os }} # Run the continuous integration workflow on each OS listed in the matrix.
+    
+    steps:
+        # Check-out the repository
+      - uses: actions/checkout@v2
+
+        # Install and setup Alire package manager
+      - uses: alire-project/setup-alire@v2
+        with:
+          version: 2.1.0 # Remove this option to use the default (latest stable release)
+
+      - name: Run build and checks
+        run: make
+        shell: bash
+
+      - name: Save summary
+        run: cat docs/tests_results/${OS_PLATFORM}/features_results.md > ${GITHUB_STEP_SUMMARY}
+        shell: bash
