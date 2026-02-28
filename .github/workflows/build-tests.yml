@@ -1,6 +1,8 @@
 name: Build and tests
 on:                    # Run the workflow for each of the following events:
-  push:                # - A branch is pushed or updated.
+  push:                # - The main branch is pushed or updated.
+    branches:
+      - main
     paths-ignore:
       - 'README.md'
   pull_request:        # - A pull-request is opened or updated.
@@ -31,12 +33,19 @@ jobs:
         with:
           version: 2.1.0 # Remove this option to use the default (latest stable release)
 
-       # On Linux we install rpl package
-      - if: runner.os == 'Linux'
-        name: Client tests (CoAP and secure CoAP)
-        run: sudo apt install rpl
+      # Install rpl (needed by `make check`) on every platform
+      - name: Install rpl
         shell: bash
-
+        run: |
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            sudo apt-get update
+            sudo apt-get install -y rpl
+          elif [[ "${{ runner.os }}" == "macOS" ]]; then
+            brew update
+            brew install rpl
+          elif [[ "${{ runner.os }}" == "Windows" ]]; then
+            choco install -y rpl
+          fi
       - name: Run build and checks
         run: make -k
         shell: bash
