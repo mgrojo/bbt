@@ -33,23 +33,38 @@ jobs:
         with:
           version: 2.1.0 # Remove this option to use the default (latest stable release)
 
-      # Install rpl (needed by `make check`) on every platform
-      - name: Install rpl
+      - name: Setup MSYS2 (Windows)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MSYS
+          update: true
+          install: >-
+            rpl
+            
+      # Install packages (needed by `make check`) on every platform
+      - name: Install packages
         shell: bash
         run: |
+          cargo install mlc
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             sudo apt-get update
             sudo apt-get install -y rpl
           elif [[ "${{ runner.os }}" == "macOS" ]]; then
             brew update
             brew install rpl
-          elif [[ "${{ runner.os }}" == "Windows" ]]; then
-            choco install -y rpl
           fi
-      - name: Run build and checks
-        run: make -k
-        shell: bash
 
+      - name: Run build and checks (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: make -k
+
+      - name: Run build and checks
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        shell: bash
+        run: make -k
+        
       - name: Save summary
         run: cat docs/tests_results/${OS_PLATFORM}/features_results.md > ${GITHUB_STEP_SUMMARY}
         shell: bash
