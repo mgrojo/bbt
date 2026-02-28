@@ -32,16 +32,16 @@ jobs:
       - uses: alire-project/setup-alire@v2
         with:
           version: 2.1.0 # Remove this option to use the default (latest stable release)
-      
-      - name: Setup MSYS2 (Windows)
+            
+      - name: Setup RPL (Windows)
         if: runner.os == 'Windows'
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MINGW64
-          update: true
-          install: >-
-            mingw-w64-x86_64-rpl
-            mingw-w64-x86_64-make
+        shell: pwsh
+        run: |
+          # Download RPL from GnuWin32
+          $rplUrl = "https://sourceforge.net/projects/gnuwin32/files/rpl/1.4.1/rpl-1.4.1-bin.zip/download"
+          Invoke-WebRequest -Uri $rplUrl -OutFile rpl.zip
+          Expand-Archive -Path rpl.zip -DestinationPath C:\GnuWin32
+          echo "C:\GnuWin32\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       # Install packages (needed by `make check`) on every platform
       - name: Install packages
@@ -56,13 +56,7 @@ jobs:
             brew install rpl
           fi
 
-      - name: Run build and checks (Windows)
-        if: runner.os == 'Windows'
-        shell: msys2 {0}
-        run: make -k
-
       - name: Run build and checks
-        if: runner.os == 'Linux' || runner.os == 'macOS'
         shell: bash
         run: make -k
         
