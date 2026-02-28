@@ -1,4 +1,4 @@
-name: Build and tests
+name: Build and test
 on:                    # Run the workflow for each of the following events:
   push:                # - The main branch is pushed or updated.
     branches:
@@ -33,7 +33,7 @@ jobs:
         with:
           version: 2.1.0 # Remove this option to use the default (latest stable release)
             
-      - name: Setup RPL (Windows)
+      - name: Setup `rpl` (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
