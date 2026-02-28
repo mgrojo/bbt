@@ -32,8 +32,8 @@ build:
 setup:
 # Manage differences between Windows and Unix
 ifeq ($(PLATFORM), Windows)
-	@ln -fs ../sut sut.exe
-	@ln -fs ../bbt bbt.exe
+	@ln -fs ../sut.exe sut.exe
+	@ln -fs ../bbt.exe bbt.exe
 EXCLUDE := --exclude Unix_Only
 
 else ifeq ($(PLATFORM), Darwin)
