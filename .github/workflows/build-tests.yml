@@ -54,10 +54,11 @@ jobs:
           elif [[ "${{ runner.os }}" == "macOS" ]]; then
             brew update
             brew install rpl
+          elif [[ "${{ runner.os }}" == "Windows" ]]; then
+            choco install -y wget
           fi
 
       - name: Run build and checks
-        shell: bash
         run: make -k
         
       - name: Save summary
